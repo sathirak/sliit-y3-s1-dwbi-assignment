@@ -1,0 +1,28 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+[Bb]in/
+[Oo]bj/
+*.ispac
+
+# SSIS
+*.dtproj.user
+
+# Logs
+*.log
+BuildLog.xml
+
+# Temporary files
+*.tmp
+*.temp
+~$*
+
+# Large data files (>100MB) - store locally, not in Git
+data/source_sql_sales.csv
