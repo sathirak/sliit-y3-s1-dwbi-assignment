@@ -52,12 +52,18 @@
 3. **Select how to define the connection**:
    - Click **New...** button
 
-4. **Connection Manager dialog**:
+4. **Connection Manager dialog** (**Recommended: ADO.NET provider**):
+   - If provider options appear, choose **.NET Framework Data Provider for SQL Server (SqlClient / ADO.NET)**
    - **Server name**: `localhost` (or `.` or `(local)`)
    - **Authentication**: Windows Authentication
    - **Select database**: `CarSalesDW`
    - Click **Test Connection** → Should say "Test connection succeeded"
    - Click **OK**
+
+   If test fails, use this connection string:
+   ```text
+   Data Source=localhost;Initial Catalog=CarSalesDW;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;
+   ```
 
 5. **Impersonation Information**:
    - Select: **Use the service account**
@@ -347,9 +353,11 @@
    - Right-click **CarSalesCube** project in Solution Explorer
    - Click **Properties**
    - Go to **Deployment**
-   - **Server**: `localhost` (or your server name)
+   - **Server**: `localhost` (or your SSAS server/instance name)
    - **Database**: `CarSalesCube`
    - Click **OK**
+
+   ⚠️ Deployment server is **SSAS instance name**, not an ADO.NET provider string.
 
 2. **Build the Solution**:
    - Right-click project → **Build**
