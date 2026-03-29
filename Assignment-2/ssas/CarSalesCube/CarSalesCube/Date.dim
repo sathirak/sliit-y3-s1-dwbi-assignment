@@ -184,6 +184,14 @@
           <Name>Quarter Number</Name>
         </AttributeRelationship>
       </AttributeRelationships>
+      <NameColumn dwd:design-time-name="2a4f6497-3b52-4317-b754-704462fc4aa1">
+        <DataType>WChar</DataType>
+        <DataSize>20</DataSize>
+        <Source xsi:type="ColumnBinding" dwd:design-time-name="dc4a6977-4056-4f4a-b073-b8187480aa56">
+          <TableID>dbo_dim_date</TableID>
+          <ColumnID>month_name</ColumnID>
+        </Source>
+      </NameColumn>
       <OrderBy>Key</OrderBy>
       <ddl200:ProcessingState>Unprocessed</ddl200:ProcessingState>
       <ddl300:AttributeHierarchyProcessingState>Unprocessed</ddl300:AttributeHierarchyProcessingState>

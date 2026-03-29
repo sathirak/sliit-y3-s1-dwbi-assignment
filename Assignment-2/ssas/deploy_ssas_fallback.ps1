@@ -105,6 +105,22 @@ $3
 '@
     $raw = [regex]::Replace($raw, $monthPattern, $monthAdd, 1)
 
+    # Ensure Month Number has a string NameColumn (required by SSAS metadata manager)
+    $monthNameColPattern = '(?s)(<Attribute>\s*<ID>Month Number</ID>.*?<AttributeRelationships>.*?</AttributeRelationships>)(\s*)(<OrderBy>Key</OrderBy>)'
+    $monthNameColAdd = @'
+$1
+      <NameColumn>
+        <DataType>WChar</DataType>
+        <DataSize>20</DataSize>
+        <Source xsi:type="ColumnBinding">
+          <TableID>dbo_dim_date</TableID>
+          <ColumnID>month_name</ColumnID>
+        </Source>
+      </NameColumn>
+$3
+'@
+    $raw = [regex]::Replace($raw, $monthNameColPattern, $monthNameColAdd, 1)
+
     # Ensure Week Of Year key is unique per year: (week_of_year, year_number)
     $weekPattern = '(?s)(<Attribute>\s*<ID>Week Of Year</ID>.*?<KeyColumns>\s*<KeyColumn>.*?<ColumnID>week_of_year</ColumnID>.*?</KeyColumn>)(\s*)(</KeyColumns>)'
     $weekAdd = @'
