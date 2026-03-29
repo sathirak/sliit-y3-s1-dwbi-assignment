@@ -238,6 +238,14 @@
           <Name>Year Number</Name>
         </AttributeRelationship>
       </AttributeRelationships>
+      <NameColumn dwd:design-time-name="3bf4d204-e4dd-4179-ad1d-2dfd277e9490">
+        <DataType>WChar</DataType>
+        <DataSize>10</DataSize>
+        <Source xsi:type="ColumnBinding" dwd:design-time-name="5d25f5fc-fddb-4695-b257-f18d6ab97f54">
+          <TableID>dbo_dim_date</TableID>
+          <ColumnID>quarter_number</ColumnID>
+        </Source>
+      </NameColumn>
       <OrderBy>Key</OrderBy>
       <ddl200:ProcessingState>Unprocessed</ddl200:ProcessingState>
       <ddl300:AttributeHierarchyProcessingState>Unprocessed</ddl300:AttributeHierarchyProcessingState>
@@ -277,6 +285,14 @@
           </Source>
         </KeyColumn>
       </KeyColumns>
+      <NameColumn dwd:design-time-name="8696e74f-a74f-4882-ad75-ec22e0b11534">
+        <DataType>WChar</DataType>
+        <DataSize>10</DataSize>
+        <Source xsi:type="ColumnBinding" dwd:design-time-name="50a6f662-b98e-4618-9dcf-6030f53de151">
+          <TableID>dbo_dim_date</TableID>
+          <ColumnID>week_of_year</ColumnID>
+        </Source>
+      </NameColumn>
       <OrderBy>Key</OrderBy>
       <ddl200:ProcessingState>Unprocessed</ddl200:ProcessingState>
       <ddl300:AttributeHierarchyProcessingState>Unprocessed</ddl300:AttributeHierarchyProcessingState>

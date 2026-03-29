@@ -136,6 +136,38 @@ $3
 '@
     $raw = [regex]::Replace($raw, $weekPattern, $weekAdd, 1)
 
+    # Ensure Quarter Number has string NameColumn
+    $quarterNameColPattern = '(?s)(<Attribute>\s*<ID>Quarter Number</ID>.*?<AttributeRelationships>.*?</AttributeRelationships>)(\s*)(<OrderBy>Key</OrderBy>)'
+    $quarterNameColAdd = @'
+$1
+      <NameColumn>
+        <DataType>WChar</DataType>
+        <DataSize>10</DataSize>
+        <Source xsi:type="ColumnBinding">
+          <TableID>dbo_dim_date</TableID>
+          <ColumnID>quarter_number</ColumnID>
+        </Source>
+      </NameColumn>
+$3
+'@
+    $raw = [regex]::Replace($raw, $quarterNameColPattern, $quarterNameColAdd, 1)
+
+    # Ensure Week Of Year has string NameColumn
+    $weekNameColPattern = '(?s)(<Attribute>\s*<ID>Week Of Year</ID>.*?</KeyColumns>)(\s*)(<OrderBy>Key</OrderBy>)'
+    $weekNameColAdd = @'
+$1
+      <NameColumn>
+        <DataType>WChar</DataType>
+        <DataSize>10</DataSize>
+        <Source xsi:type="ColumnBinding">
+          <TableID>dbo_dim_date</TableID>
+          <ColumnID>week_of_year</ColumnID>
+        </Source>
+      </NameColumn>
+$3
+'@
+    $raw = [regex]::Replace($raw, $weekNameColPattern, $weekNameColAdd, 1)
+
     Set-Content -Path $asdbPath -Value $raw -Encoding UTF8
 }
 
