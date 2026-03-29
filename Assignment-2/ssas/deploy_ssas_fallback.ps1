@@ -171,6 +171,41 @@ $3
 '@
     $raw = [regex]::Replace($raw, $weekNameColPattern, $weekNameColAdd, 1)
 
+    # Ensure Fact Sales measure group is linked to Date dimension using date_key granularity.
+    # Some generated .asdatabase builds can drop this block, which causes identical totals across years.
+    $factSalesBlockPattern = '(?s)(<MeasureGroup>\s*<ID>Fact Sales</ID>.*?<Dimensions>)(.*?)(</Dimensions>.*?</MeasureGroup>)'
+    $factSalesMatch = [regex]::Match($raw, $factSalesBlockPattern)
+    if ($factSalesMatch.Success) {
+        $factSalesHead = $factSalesMatch.Groups[1].Value
+        $factSalesDims = $factSalesMatch.Groups[2].Value
+        $factSalesTail = $factSalesMatch.Groups[3].Value
+
+        if ($factSalesDims -notmatch '(?s)<CubeDimensionID>\s*Date\s*</CubeDimensionID>') {
+            $dateMgDim = @'
+            <Dimension xsi:type="RegularMeasureGroupDimension">
+              <CubeDimensionID>Date</CubeDimensionID>
+              <Attributes>
+                <Attribute>
+                  <AttributeID>Date Key</AttributeID>
+                  <KeyColumns>
+                    <KeyColumn>
+                      <DataType>Integer</DataType>
+                      <Source xsi:type="ColumnBinding">
+                        <TableID>dbo_fact_sales</TableID>
+                        <ColumnID>date_key</ColumnID>
+                      </Source>
+                    </KeyColumn>
+                  </KeyColumns>
+                  <Type>Granularity</Type>
+                </Attribute>
+              </Attributes>
+            </Dimension>
+'@
+            $newFactSales = $factSalesHead + $factSalesDims + $dateMgDim + $factSalesTail
+            $raw = [regex]::Replace($raw, $factSalesBlockPattern, [System.Text.RegularExpressions.MatchEvaluator]{ param($m) $newFactSales }, 1)
+        }
+    }
+
     Set-Content -Path $asdbPath -Value $raw -Encoding UTF8
 }
 
