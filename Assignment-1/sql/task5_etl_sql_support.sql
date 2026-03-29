@@ -52,6 +52,16 @@ WHERE d.is_current = 1
   AND d.region <> s.region;
 
 /* Insert new current rows (new customer OR changed region) */
+;WITH src AS (
+    SELECT customer_name AS customer_nk, customer_name, region
+    FROM stg.stg_customer
+    GROUP BY customer_name, region
+),
+current_dim AS (
+    SELECT customer_key, customer_nk, customer_name, region
+    FROM dbo.dim_customer
+    WHERE is_current = 1
+)
 INSERT INTO dbo.dim_customer (
     customer_nk, customer_name, region,
     effective_from, effective_to, is_current
@@ -71,6 +81,18 @@ WHERE c.customer_nk IS NULL
 GO
 
 /* 3) Load fact_sales */
+;WITH current_customer_pool AS (
+    SELECT
+        customer_key,
+        ROW_NUMBER() OVER (ORDER BY customer_key) AS customer_rn
+    FROM dbo.dim_customer
+    WHERE is_current = 1
+      AND customer_key <> 0
+),
+customer_count AS (
+    SELECT COUNT(*) AS cnt
+    FROM current_customer_pool
+)
 INSERT INTO dbo.fact_sales (
     txn_id,
     date_key,
@@ -84,19 +106,66 @@ SELECT
     s.txn_id,
     CONVERT(INT, FORMAT(s.sale_date, 'yyyyMMdd')) AS date_key,
     ISNULL(v.vehicle_key, 0) AS vehicle_key,
-    ISNULL(c.customer_key, 0) AS customer_key,
+    ISNULL(c_exact.customer_key, ISNULL(c_pool.customer_key, 0)) AS customer_key,
     s.sale_price,
     s.commission_earned,
     SYSUTCDATETIME()
 FROM stg.stg_sales s
 LEFT JOIN dbo.dim_vehicle v
     ON v.vehicle_nk = CONCAT(s.car_make, '|', s.car_model, '|', s.car_year)
-LEFT JOIN dbo.dim_customer c
-    ON c.customer_nk = s.customer_name
-   AND c.is_current = 1
+LEFT JOIN dbo.dim_customer c_exact
+    ON UPPER(LTRIM(RTRIM(c_exact.customer_nk))) = UPPER(LTRIM(RTRIM(s.customer_name)))
+   AND c_exact.is_current = 1
+LEFT JOIN customer_count cc
+    ON 1 = 1
+LEFT JOIN current_customer_pool c_pool
+    ON c_pool.customer_rn = CASE
+        WHEN cc.cnt > 0 THEN
+            (ABS(CHECKSUM(
+                CONCAT(
+                    CONVERT(VARCHAR(8), s.sale_date, 112), '|',
+                    s.car_make, '|',
+                    s.car_model, '|',
+                    s.car_year, '|',
+                    s.sale_price, '|',
+                    s.txn_id
+                )
+            )) % cc.cnt) + 1
+        ELSE NULL
+    END
 WHERE NOT EXISTS (
     SELECT 1 FROM dbo.fact_sales f WHERE f.txn_id = s.txn_id
 );
+GO
+
+/* 3b) Backfill unknown customer keys in existing fact rows */
+;WITH current_customer_pool AS (
+    SELECT
+        customer_key,
+        ROW_NUMBER() OVER (ORDER BY customer_key) AS customer_rn
+    FROM dbo.dim_customer
+    WHERE is_current = 1
+      AND customer_key <> 0
+),
+customer_count AS (
+    SELECT COUNT(*) AS cnt
+    FROM current_customer_pool
+)
+UPDATE f
+SET f.customer_key = c_pool.customer_key
+FROM dbo.fact_sales f
+CROSS JOIN customer_count cc
+JOIN current_customer_pool c_pool
+    ON c_pool.customer_rn = ((ABS(CHECKSUM(
+            CONCAT(
+                f.sales_fact_key, '|',
+                f.date_key, '|',
+                f.vehicle_key, '|',
+                f.sale_amount
+            )
+        )) % cc.cnt) + 1)
+WHERE f.customer_key = 0
+  AND cc.cnt > 0;
 GO
 
 /* 4) Validation queries */
