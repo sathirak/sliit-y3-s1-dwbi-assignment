@@ -127,21 +127,31 @@ This becomes cascading because customer is related to region table:
 
 ## 4) Report 4 - Drill-Through
 
+### Important rule (to avoid the axis error)
+- In Power BI, **Axis** only accepts columns (text/date/category), not measures.
+- So use:
+  - Axis: `dim_vehicle[car_make]` or `dim_customer[customer_name]` or `dim_date[year_number]`
+  - Values: `Total Sales`, `Total Commission` (measures)
+
 ### Create summary page
 1. Add page, rename `Report4_Summary`.
 2. Add bar chart:
-   - Axis: `dim_vehicle[car_make]`
-   - Values: `Total Sales`
+    - Axis: `dim_vehicle[car_make]`
+    - Values: `Total Sales`
 
 ### Create detail page
 1. Add new page, rename `Report4_Detail`.
 2. In Visualizations pane (bottom area), find **Drill-through** field well.
 3. Drag `dim_vehicle[car_make]` into Drill-through field.
 4. Add table visual with details:
-   - customer_name
-   - sale_amount
-   - commission_amount
-   - year_number
+    - `dim_customer[customer_name]`
+    - `dim_date[year_number]`
+    - `Total Sales`
+    - `Total Commission`
+
+Optional detail chart (if you want one):
+- Axis: `dim_customer[customer_name]`
+- Values: `Total Sales`
 
 ### Test drill-through
 1. Go back to `Report4_Summary`.
