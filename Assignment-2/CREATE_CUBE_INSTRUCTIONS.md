@@ -396,6 +396,16 @@ This is a **client library version mismatch** (old SSAS designer client vs SQL S
 4. Open the deployment XMLA (or script from build output) and execute it in SSMS.
 5. Process database/cube in SSMS.
 
+### Fix Path C (scripted fallback - recommended in this repo)
+Use the provided script:
+
+```powershell
+cd "C:\Users\Admin\Projects\sliit-y3-s1-dwbi-assignment\Assignment-2\ssas"
+powershell -ExecutionPolicy Bypass -File .\deploy_ssas_fallback.ps1 -Server "localhost" -ProjectBinPath ".\CarSalesCube\CarSalesCube\bin"
+```
+
+If your build output is under `bin\Development`, change `-ProjectBinPath` accordingly.
+
 ### Notes
 - Keep data source as **ADO.NET / SqlClient**.
 - Deployment target remains SSAS server name (e.g., `localhost`), not a provider string.
