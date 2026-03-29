@@ -90,6 +90,9 @@ $3
 '@
     $raw = [regex]::Replace($raw, $quarterPattern, $quarterAdd, 1)
 
+    # Make Date dimension duplicate-key handling tolerant (prevents processing stop on repeated composite members)
+    $raw = $raw -replace '(?s)(<Dimension>\s*<ID>Date</ID>.*?<ErrorConfiguration>.*?<KeyNotFound>ReportAndStop</KeyNotFound>\s*)<KeyDuplicate>[^<]+</KeyDuplicate>', '$1<KeyDuplicate>IgnoreError</KeyDuplicate>'
+
     # Ensure Month Number key is unique per year: (month_number, year_number)
     $monthPattern = '(?s)(<Attribute>\s*<ID>Month Number</ID>.*?<KeyColumns>\s*<KeyColumn>.*?<ColumnID>month_number</ColumnID>.*?</KeyColumn>)(\s*)(</KeyColumns>)'
     $monthAdd = @'

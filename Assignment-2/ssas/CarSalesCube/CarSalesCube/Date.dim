@@ -116,7 +116,7 @@
   <Type>Time</Type>
   <ErrorConfiguration dwd:design-time-name="85a41776-955a-42b4-988d-d3697dd888b8">
     <KeyNotFound>ReportAndStop</KeyNotFound>
-    <KeyDuplicate>ReportAndStop</KeyDuplicate>
+    <KeyDuplicate>IgnoreError</KeyDuplicate>
     <NullKeyNotAllowed>ReportAndStop</NullKeyNotAllowed>
   </ErrorConfiguration>
   <CurrentStorageMode>Molap</CurrentStorageMode>
