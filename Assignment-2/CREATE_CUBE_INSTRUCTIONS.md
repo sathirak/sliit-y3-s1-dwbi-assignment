@@ -391,7 +391,7 @@ This is a **client library version mismatch** (old SSAS designer client vs SQL S
 ### Fix Path B (works even if VS deploy keeps failing)
 1. In Visual Studio, **Build** the project (no deploy).
 2. Find generated `.asdatabase` file in:
-   - `Assignment-2\\ssas\\CarSalesCube\\CarSalesCube\\bin\\Development\\`
+   - `Assignment-2\\ssas\\CarSalesCube\\CarSalesCube\\bin\\`
 3. Open SSMS and connect to **Analysis Services** (not Database Engine).
 4. Open the deployment XMLA (or script from build output) and execute it in SSMS.
 5. Process database/cube in SSMS.
@@ -404,7 +404,10 @@ cd "C:\Users\Admin\Projects\sliit-y3-s1-dwbi-assignment\Assignment-2\ssas"
 powershell -ExecutionPolicy Bypass -File .\deploy_ssas_fallback.ps1 -Server "localhost" -ProjectBinPath ".\CarSalesCube\CarSalesCube\bin"
 ```
 
-If your build output is under `bin\Development`, change `-ProjectBinPath` accordingly.
+If your build output is under a different folder, point `-ProjectBinPath` to the folder containing:
+- `CarSalesCube.asdatabase`
+- `CarSalesCube.deploymenttargets`
+- `CarSalesCube.deploymentoptions`
 
 ### Notes
 - Keep data source as **ADO.NET / SqlClient**.
