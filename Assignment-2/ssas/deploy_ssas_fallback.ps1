@@ -75,6 +75,51 @@ if ($SanitizeDateDimension) {
     # Keep NameColumn stable for Date Key
     $raw = $raw -replace '(?s)<NameColumn>\s*<DataType>WChar</DataType>\s*<Source xsi:type="ColumnBinding">\s*<TableID>dbo_dim_date</TableID>\s*<ColumnID>full_date</ColumnID>\s*</Source>\s*</NameColumn>', '<NameColumn><DataType>WChar</DataType><DataSize>30</DataSize><Source xsi:type="ColumnBinding"><TableID>dbo_dim_date</TableID><ColumnID>full_date</ColumnID></Source></NameColumn>'
 
+    # Ensure Quarter Number key is unique per year: (quarter_number, year_number)
+    $quarterPattern = '(?s)(<Attribute>\s*<ID>Quarter Number</ID>.*?<KeyColumns>\s*<KeyColumn>.*?<ColumnID>quarter_number</ColumnID>.*?</KeyColumn>)(\s*)(</KeyColumns>)'
+    $quarterAdd = @'
+$1
+        <KeyColumn>
+          <DataType>SmallInt</DataType>
+          <Source xsi:type="ColumnBinding">
+            <TableID>dbo_dim_date</TableID>
+            <ColumnID>year_number</ColumnID>
+          </Source>
+        </KeyColumn>
+$3
+'@
+    $raw = [regex]::Replace($raw, $quarterPattern, $quarterAdd, 1)
+
+    # Ensure Month Number key is unique per year: (month_number, year_number)
+    $monthPattern = '(?s)(<Attribute>\s*<ID>Month Number</ID>.*?<KeyColumns>\s*<KeyColumn>.*?<ColumnID>month_number</ColumnID>.*?</KeyColumn>)(\s*)(</KeyColumns>)'
+    $monthAdd = @'
+$1
+        <KeyColumn>
+          <DataType>SmallInt</DataType>
+          <Source xsi:type="ColumnBinding">
+            <TableID>dbo_dim_date</TableID>
+            <ColumnID>year_number</ColumnID>
+          </Source>
+        </KeyColumn>
+$3
+'@
+    $raw = [regex]::Replace($raw, $monthPattern, $monthAdd, 1)
+
+    # Ensure Week Of Year key is unique per year: (week_of_year, year_number)
+    $weekPattern = '(?s)(<Attribute>\s*<ID>Week Of Year</ID>.*?<KeyColumns>\s*<KeyColumn>.*?<ColumnID>week_of_year</ColumnID>.*?</KeyColumn>)(\s*)(</KeyColumns>)'
+    $weekAdd = @'
+$1
+        <KeyColumn>
+          <DataType>SmallInt</DataType>
+          <Source xsi:type="ColumnBinding">
+            <TableID>dbo_dim_date</TableID>
+            <ColumnID>year_number</ColumnID>
+          </Source>
+        </KeyColumn>
+$3
+'@
+    $raw = [regex]::Replace($raw, $weekPattern, $weekAdd, 1)
+
     Set-Content -Path $asdbPath -Value $raw -Encoding UTF8
 }
 

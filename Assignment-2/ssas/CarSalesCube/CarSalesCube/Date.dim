@@ -170,6 +170,13 @@
             <ColumnID>month_number</ColumnID>
           </Source>
         </KeyColumn>
+        <KeyColumn dwd:design-time-name="f0a48107-3f9e-4dd2-b660-9f6f2b53b1b8">
+          <DataType>SmallInt</DataType>
+          <Source xsi:type="ColumnBinding" dwd:design-time-name="756db973-429f-48bf-8c2b-0efcbec6d5fb">
+            <TableID>dbo_dim_date</TableID>
+            <ColumnID>year_number</ColumnID>
+          </Source>
+        </KeyColumn>
       </KeyColumns>
       <AttributeRelationships>
         <AttributeRelationship dwd:design-time-name="de9791a3-4f6c-4a7a-ad99-48f8dad38b14">
@@ -209,6 +216,13 @@
             <ColumnID>quarter_number</ColumnID>
           </Source>
         </KeyColumn>
+        <KeyColumn dwd:design-time-name="6ce95e5d-32ea-4f12-94f5-4ea2dbe06cf2">
+          <DataType>SmallInt</DataType>
+          <Source xsi:type="ColumnBinding" dwd:design-time-name="66f0bc3d-e19c-4fd5-8fc4-2ebec1f25f29">
+            <TableID>dbo_dim_date</TableID>
+            <ColumnID>year_number</ColumnID>
+          </Source>
+        </KeyColumn>
       </KeyColumns>
       <AttributeRelationships>
         <AttributeRelationship dwd:design-time-name="47688a3c-ab70-4b3e-90c6-9be03b17b161">
@@ -245,6 +259,13 @@
           <Source xsi:type="ColumnBinding" dwd:design-time-name="2db83ffd-eef4-4a90-8578-589b4e8c6a6d">
             <TableID>dbo_dim_date</TableID>
             <ColumnID>week_of_year</ColumnID>
+          </Source>
+        </KeyColumn>
+        <KeyColumn dwd:design-time-name="cc4174f9-bf94-4172-95bf-b8c9195c8cf2">
+          <DataType>SmallInt</DataType>
+          <Source xsi:type="ColumnBinding" dwd:design-time-name="9ec8fd3c-2302-42fe-9d57-acf8cabdcdf6">
+            <TableID>dbo_dim_date</TableID>
+            <ColumnID>year_number</ColumnID>
           </Source>
         </KeyColumn>
       </KeyColumns>
