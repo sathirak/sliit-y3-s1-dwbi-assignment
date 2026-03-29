@@ -343,6 +343,16 @@
 
 4. **Save All** (Ctrl+Shift+S)
 
+5. **Prevent the "Semi-additive measure requires a time dimension" error**:
+   - In **Cube Structure**, click each measure in **Fact Sales** and check **Properties**.
+   - Ensure **AggregateFunction** is set as follows:
+     - `Sale Amount` → `Sum`
+     - `Commission Amount` → `Sum`
+     - `Fact Sales Count` → `Count`
+     - `Avg Processing Time` (`txn_process_time_hours`) → `Average`
+   - Do **not** leave any measure as `LastNonEmpty`, `FirstNonEmpty`, `ByAccount`, or other semi-additive type unless Time is fully configured.
+   - If the wizard set a wrong value, change it manually and save.
+
 ---
 
 ## STEP 7: Deploy and Process Cube
@@ -377,6 +387,18 @@
    - In Process dialog, click **Run**
    - Wait for processing to complete (may take a few minutes with 2.5M rows)
    - Click **Close** when done
+
+5. **If you still get semi-additive/time errors**:
+   - Open **Dimension Usage** tab in Cube Designer.
+   - Verify relationship:
+     - Measure Group: **Fact Sales**
+     - Dimension: **Date**
+     - Relationship Type: **Regular**
+     - Granularity Attribute: `date_key`
+   - Open **Date** dimension and verify:
+     - Dimension `Type` = `Time`
+     - Key attribute = `date_key`
+   - Rebuild and reprocess cube.
 
 ✅ **Result**: Cube deployed and processed with data
 
