@@ -6,7 +6,8 @@
 param(
     [string]$Server = "localhost",
     [string]$ProjectBinPath = ".\CarSalesCube\CarSalesCube\bin",
-    [switch]$GenerateScriptOnly
+    [switch]$GenerateScriptOnly,
+    [switch]$SanitizeDateDimension = $true
 )
 
 $ErrorActionPreference = "Stop"
@@ -57,6 +58,25 @@ $targetsXml.Save($targetsPath)
 Write-Step "Locating deployment utility"
 $deployExe = Get-DeploymentExe
 Write-Host "Using: $deployExe" -ForegroundColor Green
+
+if ($SanitizeDateDimension) {
+    Write-Step "Sanitizing Date dimension in .asdatabase (compatibility hardening)"
+    $raw = Get-Content $asdbPath -Raw
+
+    # Remove Date Key -> Full Date attribute relationship if present
+    $raw = $raw -replace '(?s)<AttributeRelationship>\s*<AttributeID>Full Date</AttributeID>\s*<Name>Full Date</Name>\s*</AttributeRelationship>', ''
+
+    # Ensure Date Key is simple single-column key by removing any secondary full_date key column under Date Key
+    $raw = $raw -replace '(?s)(<Attribute>\s*<ID>Date Key</ID>.*?<KeyColumns>)(.*?)(<KeyColumn>\s*<DataType>Date</DataType>\s*<Source xsi:type="ColumnBinding">\s*<TableID>dbo_dim_date</TableID>\s*<ColumnID>full_date</ColumnID>\s*</Source>\s*</KeyColumn>)(.*?</KeyColumns>.*?</Attribute>)', '$1$2$4'
+
+    # Remove standalone Full Date attribute block if present
+    $raw = $raw -replace '(?s)<Attribute>\s*<ID>Full Date</ID>.*?</Attribute>', ''
+
+    # Keep NameColumn stable for Date Key
+    $raw = $raw -replace '(?s)<NameColumn>\s*<DataType>WChar</DataType>\s*<Source xsi:type="ColumnBinding">\s*<TableID>dbo_dim_date</TableID>\s*<ColumnID>full_date</ColumnID>\s*</Source>\s*</NameColumn>', '<NameColumn><DataType>WChar</DataType><DataSize>30</DataSize><Source xsi:type="ColumnBinding"><TableID>dbo_dim_date</TableID><ColumnID>full_date</ColumnID></Source></NameColumn>'
+
+    Set-Content -Path $asdbPath -Value $raw -Encoding UTF8
+}
 
 if ($GenerateScriptOnly) {
     Write-Step "Generating deployment XMLA script only"
