@@ -1,135 +1,230 @@
-# Step 3 - Excel OLAP Operations (25 Marks)
+# Step 3 (Excel OLAP) - Beginner Click-by-Click Guide
 
-## Goal
-Demonstrate all 5 OLAP operations using the `CarSalesCube` in Excel:
-- Roll-up
-- Drill-Down
-- Slice
-- Dice
-- Pivot
+You said you are new to this, so follow this **exactly**.
+
+Goal: Show these 5 operations in Excel:
+1. Roll-up
+2. Drill-Down
+3. Slice
+4. Dice
+5. Pivot
 
 ---
 
-## A) Connect Excel to SSAS Cube
+## 0) Before you start
 
-1. Open Excel (blank workbook)
-2. Go to **Data** tab
-3. Click **Get Data** -> **From Database** -> **From Analysis Services**
-4. Server: `localhost`
-5. Select database: `CarSalesCube`
-6. Select cube/model: `CarSales`
-7. Load as **PivotTable Report** in a new worksheet
+- Make sure SSAS cube works (you already saw Sale Amount number, so good).
+- Keep SSMS closed while doing Excel if your PC is slow.
 
-Create 5 sheets and name them:
+---
+
+## 1) Open Excel and connect to cube
+
+1. Open **Microsoft Excel**.
+2. Click **Blank workbook**.
+3. Go to top tab **Data**.
+4. Click **Get Data** (left side).
+5. Click **From Database**.
+6. Click **From Analysis Services**.
+7. In Server box, type: `localhost`
+8. Click **Next**.
+9. Choose database: **CarSalesCube**
+10. Choose cube/model: **CarSales**
+11. Click **Finish**.
+12. In Import Data window:
+    - Select **PivotTable Report**
+    - Select **New Worksheet**
+13. Click **OK**.
+
+Now you should see:
+- Empty PivotTable on left
+- **PivotTable Fields** pane on right
+
+If right pane is missing:
+- Click anywhere inside pivot table
+- Go to **PivotTable Analyze** tab
+- Click **Field List**
+
+---
+
+## 2) Create required worksheet names
+
+At bottom tabs, create/rename sheets exactly:
 - `01_RollUp`
 - `02_DrillDown`
 - `03_Slice`
 - `04_Dice`
 - `05_Pivot`
 
----
-
-## B) Operation 1: Roll-up
-
-**What to show:** Aggregated sales at higher level.
-
-1. On sheet `01_RollUp`
-2. Rows: `Date` hierarchy -> **Year**
-3. Values: `Measures` -> **Sale Amount**
-4. Optional Filter: none
-
-✅ Expected result: One sales total per year (e.g., 2022, 2023, ...)
-
-📸 Screenshot: Pivot table + field list visible.
+Tip:
+- Right-click sheet tab -> Rename
+- Copy first pivot sheet 4 times (right-click tab -> Move or Copy -> Create a copy)
 
 ---
 
-## C) Operation 2: Drill-Down
+## 3) Understand 4 Pivot areas (important)
 
-**What to show:** Expand Year into Quarter/Month.
+In right pane (PivotTable Fields), you’ll see 4 boxes:
+- **Filters**
+- **Columns**
+- **Rows**
+- **Values**
 
-1. Copy roll-up pivot to `02_DrillDown`
-2. Keep Rows = Date hierarchy
-3. Click `+` next to one Year to expand to Quarter
-4. Expand again to Month
-
-✅ Expected result: Year -> Quarter -> Month hierarchy visible.
-
-📸 Screenshot: Expanded hierarchy with multi-level rows.
+You drag fields into these boxes.
 
 ---
 
-## D) Operation 3: Slice
+## 4) Operation 1: Roll-up (Sheet `01_RollUp`)
 
-**What to show:** Filter by one dimension.
+### What this means
+Show total sales at high level (Year only).
 
-1. On `03_Slice`
-2. Rows: Year (Date hierarchy)
-3. Values: Sale Amount
-4. Add one filter/slicer:
-   - Example: `Customer -> Region`
-5. Select a single region (e.g., West)
+### Exact steps
+1. Click sheet `01_RollUp`.
+2. In field list, find Date hierarchy (Year/Quarter/Month or similar).
+3. Drag **Year** into **Rows** box.
+4. In Measures, drag **Sale Amount** into **Values** box.
+5. Remove anything else from Rows/Columns/Filters.
 
-✅ Expected result: Sales shown only for that selected region.
+### Expected output
+- One row per year
+- One total sale amount per year
 
-📸 Screenshot: Pivot + selected slicer/filter.
-
----
-
-## E) Operation 4: Dice
-
-**What to show:** Filter by multiple dimensions.
-
-1. On `04_Dice`
-2. Rows: Year or Month
-3. Values: Sale Amount
-4. Add 2+ filters/slicers:
-   - Region = West
-   - Car Make = Ford
-   - (Optional) Year = 2024
-
-✅ Expected result: Data for intersection of multiple filters.
-
-📸 Screenshot: Multiple filters selected + reduced dataset.
+📸 Take screenshot: full pivot + right field pane.
 
 ---
 
-## F) Operation 5: Pivot
+## 5) Operation 2: Drill-Down (Sheet `02_DrillDown`)
 
-**What to show:** Rotate dimensions between rows and columns.
+### What this means
+Go from Year to deeper level (Quarter, Month).
 
-1. On `05_Pivot`
-2. Start with:
+### Exact steps
+1. Copy `01_RollUp` pivot to `02_DrillDown` (or recreate same).
+2. In rows, ensure Date hierarchy includes:
+   - Year
+   - Quarter
+   - Month
+3. In pivot table, click **+** beside a Year.
+4. You should now see Quarter rows under that Year.
+5. Click **+** beside a Quarter to see Month.
+
+### Expected output
+- Tree style data: Year -> Quarter -> Month
+
+📸 Take screenshot with expanded Year and Quarter.
+
+---
+
+## 6) Operation 3: Slice (Sheet `03_Slice`)
+
+### What this means
+Filter using **one** dimension only.
+
+### Exact steps
+1. Click sheet `03_Slice`.
+2. Keep:
+   - Rows: Year
+   - Values: Sale Amount
+3. Add one filter:
+   - Drag **Region** into **Filters** box.
+4. On pivot table top, open Region dropdown.
+5. Select only one region (example: `West`).
+6. Click OK.
+
+### Expected output
+- Sales now shown only for one selected region.
+
+📸 Screenshot must show selected Region value.
+
+---
+
+## 7) Operation 4: Dice (Sheet `04_Dice`)
+
+### What this means
+Filter using **multiple** dimensions at same time.
+
+### Exact steps
+1. Click sheet `04_Dice`.
+2. Keep:
+   - Rows: Year (or Month)
+   - Values: Sale Amount
+3. Add multiple filters:
+   - Region -> Filters
+   - Car Make -> Filters
+   - (Optional) Year -> Filters
+4. Select:
+   - Region = one value (ex: West)
+   - Car Make = one value (ex: Ford)
+   - Year = one value (optional)
+
+### Expected output
+- Data becomes smaller (intersection of filters).
+
+📸 Screenshot must show all selected filters.
+
+---
+
+## 8) Operation 5: Pivot (Sheet `05_Pivot`)
+
+### What this means
+Rotate axes (swap Rows and Columns).
+
+### Exact steps
+1. Click sheet `05_Pivot`.
+2. First layout:
    - Rows: Year
    - Columns: Car Make
    - Values: Sale Amount
-3. Then swap:
-   - Rows: Car Make
-   - Columns: Year
+3. Screenshot this first layout.
+4. Now swap:
+   - Move Car Make to Rows
+   - Move Year to Columns
+5. Screenshot second layout.
 
-✅ Expected result: Same measure view, but axes rotated.
+### Expected output
+- Same data view, but direction changed (rotated).
 
-📸 Screenshot: One orientation or both before/after.
-
----
-
-## Required deliverables for Step 3
-
-Save workbook as:
-`Assignment-2\excel\OLAP_Operations_ITXXXXXXXX.xlsx`
-
-Take at least 5 screenshots (one per operation), and keep them for final PDF report.
+📸 At least one screenshot; better to keep both before/after.
 
 ---
 
-## Quick quality checklist
+## 9) Save workbook
 
-- [ ] Connected to `CarSalesCube` successfully
-- [ ] Sale Amount measure used in all operations
-- [ ] 5 operations demonstrated clearly
-- [ ] Screenshots captured with filter states visible
-- [ ] Workbook saved in Assignment-2/excel
+Save to:
+
+`C:\Users\Admin\Projects\sliit-y3-s1-dwbi-assignment\Assignment-2\excel\OLAP_Operations_ITXXXXXXXX.xlsx`
+
+Replace `ITXXXXXXXX` with your student ID.
 
 ---
 
-When done, tell Copilot: "Excel Step 3 done" and we will generate your documentation text + start PowerBI Step 4.
+## 10) What to submit later from Step 3
+
+- Excel file above
+- 5+ screenshots (one per operation) for final PDF report
+
+---
+
+## Troubleshooting (quick)
+
+### I can’t see field list
+- Click pivot table -> PivotTable Analyze -> Field List
+
+### I can’t find Sale Amount
+- Expand `Measures`
+- Look for `Sale Amount` or similar name
+
+### Everything is blank
+- Check connection:
+  - Data -> Queries & Connections
+  - Refresh All
+
+### Too slow
+- Close SSMS and Visual Studio while using Excel
+
+---
+
+When done, message:
+**“Excel Step 3 done”**
+and I’ll generate your exact documentation text for report.
