@@ -26,3 +26,7 @@ BuildLog.xml
 
 # Large data files (>100MB) - store locally, not in Git
 data/source_sql_sales.csv
+
+# Large local dataset
+Assignment-1/data/source_sql_sales.csv
+
