@@ -52,18 +52,12 @@
 3. **Select how to define the connection**:
    - Click **New...** button
 
-4. **Connection Manager dialog** (**Recommended: ADO.NET provider**):
-   - If provider options appear, choose **.NET Framework Data Provider for SQL Server (SqlClient / ADO.NET)**
+4. **Connection Manager dialog**:
    - **Server name**: `localhost` (or `.` or `(local)`)
    - **Authentication**: Windows Authentication
    - **Select database**: `CarSalesDW`
    - Click **Test Connection** → Should say "Test connection succeeded"
    - Click **OK**
-
-   If test fails, use this connection string:
-   ```text
-   Data Source=localhost;Initial Catalog=CarSalesDW;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;
-   ```
 
 5. **Impersonation Information**:
    - Select: **Use the service account**
@@ -343,16 +337,6 @@
 
 4. **Save All** (Ctrl+Shift+S)
 
-5. **Prevent the "Semi-additive measure requires a time dimension" error**:
-   - In **Cube Structure**, click each measure in **Fact Sales** and check **Properties**.
-   - Ensure **AggregateFunction** is set as follows:
-     - `Sale Amount` → `Sum`
-     - `Commission Amount` → `Sum`
-     - `Fact Sales Count` → `Count`
-     - `Avg Processing Time` (`txn_process_time_hours`) → `Average`
-   - Do **not** leave any measure as `LastNonEmpty`, `FirstNonEmpty`, `ByAccount`, or other semi-additive type unless Time is fully configured.
-   - If the wizard set a wrong value, change it manually and save.
-
 ---
 
 ## STEP 7: Deploy and Process Cube
@@ -363,11 +347,9 @@
    - Right-click **CarSalesCube** project in Solution Explorer
    - Click **Properties**
    - Go to **Deployment**
-   - **Server**: `localhost` (or your SSAS server/instance name)
+   - **Server**: `localhost` (or your server name)
    - **Database**: `CarSalesCube`
    - Click **OK**
-
-   ⚠️ Deployment server is **SSAS instance name**, not an ADO.NET provider string.
 
 2. **Build the Solution**:
    - Right-click project → **Build**
@@ -388,19 +370,35 @@
    - Wait for processing to complete (may take a few minutes with 2.5M rows)
    - Click **Close** when done
 
-5. **If you still get semi-additive/time errors**:
-   - Open **Dimension Usage** tab in Cube Designer.
-   - Verify relationship:
-     - Measure Group: **Fact Sales**
-     - Dimension: **Date**
-     - Relationship Type: **Regular**
-     - Granularity Attribute: `date_key`
-   - Open **Date** dimension and verify:
-     - Dimension `Type` = `Time`
-     - Key attribute = `date_key`
-   - Rebuild and reprocess cube.
-
 ✅ **Result**: Cube deployed and processed with data
+
+---
+
+## DEPLOYMENT ERROR FIX (IMPORTANT)
+
+If you get this error during deployment:
+
+`The current edition 'StandardDeveloper64' ... is not supported by the client`
+
+This is a **client library version mismatch** (old SSAS designer client vs SQL Server 2025 SSAS instance).
+
+### Fix Path A (recommended)
+1. In Visual Studio, go to **Extensions → Manage Extensions**.
+2. Update/install **Microsoft Analysis Services Projects** to the latest version.
+3. Close Visual Studio and let VSIX Installer complete.
+4. Reopen project and deploy again.
+
+### Fix Path B (works even if VS deploy keeps failing)
+1. In Visual Studio, **Build** the project (no deploy).
+2. Find generated `.asdatabase` file in:
+   - `Assignment-2\\ssas\\CarSalesCube\\CarSalesCube\\bin\\Development\\`
+3. Open SSMS and connect to **Analysis Services** (not Database Engine).
+4. Open the deployment XMLA (or script from build output) and execute it in SSMS.
+5. Process database/cube in SSMS.
+
+### Notes
+- Keep data source as **ADO.NET / SqlClient**.
+- Deployment target remains SSAS server name (e.g., `localhost`), not a provider string.
 
 ---
 
